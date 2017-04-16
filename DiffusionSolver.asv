@@ -25,35 +25,58 @@ elseif numel(S)~=(n+1)*(m+1)
     disp('error')
     return
 end
-V=zeros(n,m)+e*d/4;
-Eaij=zeros(n+1,m+1);
+V=zeros(n+1,m+1)+e*d/4;
+Eaij=zeros(n-1,m-1);
 Sij=zeros(n+1,m+1); 
 a=zeros(n+1,m+1,n+1,m+1);
 d=zeros(n+1,1)+d; % d(1) and e(1) should actually be undefined, but they are unused.
 e=zeros(m+1,1)+d;
 for i=2:n 
     for j=2:m %Equivalent to j=1 through m-1 in zero index E(0,0) does not exist and E(n+1,:) does not exist. 
-        Eaij(i,j)=phi(i,j)*(E(i,j)*V(i,j)+E(i+1,j)*V(i+1,j)+E(i,j+1)*V(i,j+1)+E(i+1,j+1)*V(i+1,j+1)); %PHI?
+        %Eaij(i,j)=phi(i,j)*(E(i,j)*V(i,j)+E(i+1,j)*V(i+1,j)+E(i,j+1)*V(i,j+1)+E(i+1,j+1)*V(i+1,j+1)); %PHI?
+        Eaij(i,j)=(E(i,j)*V(i,j)+E(i+1,j)*V(i+1,j)+E(i,j+1)*V(i,j+1)+E(i+1,j+1)*V(i+1,j+1));
+    end
+end
+for i=1:n
+    for j=1:m
         Sij(i,j)=(S(i,j)*V(i,j)+S(i+1,j)*V(i+1,j)+S(i,j+1)*V(i,j+1)+S(i+1,j+1)*V(i+1,j+1));
     end
 end
-for i=1:n+1
-    for j=1:m+1
-        if i>1 && j<m+1
-                a(i,j,i-1,j)=-(D(i,j)*e(j)+D(i,j+1)*e(j+1)/(2*d(i)));
-        end
-        if i<n+1 && j<m+1
-                a(i,j,i+1,j)=-(D(i+1,j)*e(j)+D(i+1,j+1)*e(j+1)/(2*d(i+1)));
-        end
-        if j>1 && i<n+1
-                a(i,j,i,j-1)=-(D(i,j)*d(i)+D(i+1,j)*d(i+1)/(2*e(j)));
-        end
-        if j<m+1 && i<n+1
-                a(i,j,i,j+1)=-(D(i,j+1)*d(i)+D(i+1,j+1)*d(j+1)/(2*e(j+1)));
-        end
-        if j>1 && i>1 && j<m+1 && i<n+1
-            a(i,j,i,j)
+for i=2:n
+    for j=2:m
+        a(i,j,i-1,j)=-(D(i,j)*e(j)+D(i,j+1)*e(j+1)/(2*d(i)));
+        a(i,j,i+1,j)=-(D(i+1,j)*e(j)+D(i+1,j+1)*e(j+1)/(2*d(i+1)));
+        a(i,j,i,j-1)=-(D(i,j)*d(i)+D(i+1,j)*d(i+1)/(2*e(j)));
+        a(i,j,i,j+1)=-(D(i,j+1)*d(i)+D(i+1,j+1)*d(j+1)/(2*e(j+1)));
+        a(i,j,i,j)=Eaij(1,j)-(a(i,j,i-1,j)+a(i,j,i+1,j)+a(i,j,i,j-1)+a(i,j,i,j+1));
     end
 end
 
-
+%define a(0..) a(n..) a(..0) and a(..m)
+A=zeros((m+1)*(n+1),(m+1)*(n+1));
+d=zeros(n+1,n+1,m+1);
+t=zeros(n+1,n+1,m);
+b=zeros(n+1,n+1,m);
+for bb=1:m+1
+    for dd=1:m+1
+        for aa=1:n+1
+            for cc=1:n+1
+                if bb==dd
+                    d(aa,cc,bb)=a(aa,bb,cc,dd);
+                elseif dd==bb+1
+                    t(aa,cc,bb)=a(aa,bb,cc,dd);
+                elseif bb==dd+1
+                    b(aa,cc,bb-1)=a(aa,bb,cc,dd);
+                end                    
+            end
+        end
+    end
+end
+for i=1:m+1
+    A((n+1)*i-(n):(n+1)*i,(n+1)*i-(n):(n+1)*i)=d(:,:,i);
+end
+for i=1:m
+    A((n+1)*i-(n)+(n+1):(n+1)*i+(n+1),(n+1)*i-(n):(n+1)*i)=b(:,:,i);
+    A((n+1)*i-(n):(n+1)*i,(n+1)*i-(n)+n+1:(n+1)*i)=t(:,:,i);
+end
+end
