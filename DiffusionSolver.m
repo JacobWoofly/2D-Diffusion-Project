@@ -30,7 +30,7 @@ Eaij=zeros(n-1,m-1);
 Sij=zeros(n+1,m+1); 
 a=zeros(n+1,m+1,n+1,m+1);
 d=zeros(n+1,1)+d; % d(1) and e(1) should actually be undefined, but they are unused.
-e=zeros(m+1,1)+d;
+e=zeros(m+1,1)+e;
 for i=2:n 
     for j=2:m %Equivalent to j=1 through m-1 in zero index E(0,0) does not exist and E(n+1,:) does not exist. 
         %Eaij(i,j)=phi(i,j)*(E(i,j)*V(i,j)+E(i+1,j)*V(i+1,j)+E(i,j+1)*V(i,j+1)+E(i+1,j+1)*V(i+1,j+1)); %PHI?
@@ -61,21 +61,27 @@ for bb=1:m+1
     for dd=1:m+1
         if bb==dd
             for aa=1:n+1
-                for cc=1:n+1
-                    d(aa,cc,bb)=a(aa,bb,cc,dd);
+                if aa>2 && aa<n+1
+                    for cc=aa-1:aa+1 %cc is always between aa-1 and aa+1
+                        d(aa,cc,bb)=a(aa,bb,cc,dd);
+                    end
+                elseif aa<3
+                    for cc=1:aa+1 %cc is always between aa-1 and aa+1
+                        d(aa,cc,bb)=a(aa,bb,cc,dd);
+                    end
+                elseif aa>n
+                    for cc=aa-1:aa %cc is always between aa-1 and aa+1
+                        d(aa,cc,bb)=a(aa,bb,cc,dd);
+                    end        
                 end
             end
         elseif dd==bb+1
-            for aa=1:n+1
-                for cc=1:n+1
-                    t(aa,cc,bb)=a(aa,bb,cc,dd);
-                end
+            for aa=1:n+1 %removed cc because cc always equals aa
+                    t(aa,aa,bb)=a(aa,bb,aa,dd);
             end
         elseif bb==dd+1
-            for aa=1:n+1
-                for cc=1:n+1
-                    b(aa,cc,bb-1)=a(aa,bb,cc,dd);
-                end
+            for aa=1:n+1 %removed cc because cc always equals aa
+                    b(aa,aa,bb-1)=a(aa,bb,aa,dd);
             end
         end
 %                  if bb==dd

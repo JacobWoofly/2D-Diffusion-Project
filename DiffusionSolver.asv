@@ -59,17 +59,41 @@ t=zeros(n+1,n+1,m);
 b=zeros(n+1,n+1,m);
 for bb=1:m+1
     for dd=1:m+1
-        for aa=1:n+1
-            for cc=1:n+1
-                if bb==dd
-                    d(aa,cc,bb)=a(aa,bb,cc,dd);
-                elseif dd==bb+1
-                    t(aa,cc,bb)=a(aa,bb,cc,dd);
-                elseif bb==dd+1
-                    b(aa,cc,bb-1)=a(aa,bb,cc,dd);
-                end                    
+        if bb==dd
+            for aa=1:n+1
+                if aa>2 && a<n+1
+                    for cc=aa-1:aa+1 %cc is always between aa-1 and aa+1
+                        d(aa,cc,bb)=a(aa,bb,cc,dd);
+                    end
+                elseif a<3
+                        for cc=1:aa+1 %cc is always between aa-1 and aa+1
+                            d(aa,cc,bb)=a(aa,bb,cc,dd);
+                        end
+                elseif a>n
+for cc=1:aa+1 %cc is always between aa-1 and aa+1
+                            d(aa,cc,bb)=a(aa,bb,cc,dd);
+                        end        
+                else
+                    for cc=aa-1:aa+1 %cc is always between aa-1 and aa+1
+                        d(aa,cc,bb)=a(aa,bb,cc,dd);
+                    end
+                end
+            end
+        elseif dd==bb+1
+            for aa=1:n+1 %removed cc because cc always equals aa
+                    t(aa,aa,bb)=a(aa,bb,aa,dd);
+            end
+        elseif bb==dd+1
+            for aa=1:n+1 %removed cc because cc always equals aa
+                    b(aa,aa,bb-1)=a(aa,bb,aa,dd);
             end
         end
+%                  if bb==dd
+%                      d(aa,cc,bb)=a(aa,bb,cc,dd);
+%                 elseif dd==bb+1
+%                     t(aa,cc,bb)=a(aa,bb,cc,dd);
+%                 elseif bb==dd+1
+%                     b(aa,cc,bb-1)=a(aa,bb,cc,dd);
     end
 end
 for i=1:m+1
@@ -77,6 +101,6 @@ for i=1:m+1
 end
 for i=1:m
     A((n+1)*i-(n)+(n+1):(n+1)*i+(n+1),(n+1)*i-(n):(n+1)*i)=b(:,:,i);
-    A((n+1)*i-(n):(n+1)*i,(n+1)*i-(n)+n+1:(n+1)*i)=t(:,:,i);
+    A((n+1)*i-(n):(n+1)*i,(n+1)*i-(n)+n+1:(n+1)*i+n+1)=t(:,:,i);
 end
 end
