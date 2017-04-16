@@ -1,4 +1,4 @@
-DiffusionSolver(xmin,xmax,d,ymin,ymax,e,h,D,E,S
+DiffusionSolver(xmin,xmax,d,ymin,ymax,e,D,E,S
 
 xmin= the x value of the left boundary
 xmax= the x value of the right boundary
