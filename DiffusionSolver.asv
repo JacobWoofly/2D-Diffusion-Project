@@ -1,0 +1,9 @@
+function [phi] = DiffusionSolver(xmin,xmax,d,ymin,ymax,e,h,D,E,S)
+%DIFFUSIONSOLVER Summary of this function goes here
+%   Detailed explanation goes here
+n=(xmax-xmin)/d;
+m=(ymax-ymin)/e;
+if numel(D)=1;
+    D=zeros(
+end
+
