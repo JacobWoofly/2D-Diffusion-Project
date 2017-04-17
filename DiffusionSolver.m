@@ -84,19 +84,34 @@ for bb=1:m+1
                     b(aa,aa,bb-1)=a(aa,bb,aa,dd);
             end
         end
-%                  if bb==dd
+%         for aa=1:n+1
+%             for cc=1:n+1
+%                 if bb==dd
 %                      d(aa,cc,bb)=a(aa,bb,cc,dd);
 %                 elseif dd==bb+1
 %                     t(aa,cc,bb)=a(aa,bb,cc,dd);
 %                 elseif bb==dd+1
 %                     b(aa,cc,bb-1)=a(aa,bb,cc,dd);
+%                 end
+%             end
     end
 end
+for i=1:n+1
+    Sij(i,1)=0; %bottom vacuum boundary
+end
+for j=1:m+1;
+    Sij(1,j)=0; %left vacuum boundary
+end
+
 for i=1:m+1
     A((n+1)*i-(n):(n+1)*i,(n+1)*i-(n):(n+1)*i)=d(:,:,i);
 end
 for i=1:m
     A((n+1)*i-(n)+(n+1):(n+1)*i+(n+1),(n+1)*i-(n):(n+1)*i)=b(:,:,i);
     A((n+1)*i-(n):(n+1)*i,(n+1)*i-(n)+n+1:(n+1)*i+n+1)=t(:,:,i);
+end
+Sv=zeros((n+1)*(m+1),1);
+for i=1:(n+1)*(m+1)
+    Sv(i)=Sij(i);
 end
 end
