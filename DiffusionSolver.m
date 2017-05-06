@@ -32,8 +32,7 @@ a=zeros(n+1,m+1,n+1,m+1);
 d=zeros(n+1,1)+d; % d(1) and e(1) should actually be undefined, but they are unused.
 e=zeros(m+1,1)+e;
 for i=2:n 
-    for j=2:m %Equivalent to j=1 through m-1 in zero index E(0,0) does not exist and E(n+1,:) does not exist. 
-        %Eaij(i,j)=phi(i,j)*(E(i,j)*V(i,j)+E(i+1,j)*V(i+1,j)+E(i,j+1)*V(i,j+1)+E(i+1,j+1)*V(i+1,j+1)); %PHI?
+    for j=2:m %Equivalent to j=1 through m-1 in zero index E(0,0) does not exist and E(n+1,:) does not exist.
         Eaij(i,j)=(E(i,j)*V(i,j)+E(i+1,j)*V(i+1,j)+E(i,j+1)*V(i,j+1)+E(i+1,j+1)*V(i+1,j+1));
     end
 end
@@ -48,8 +47,18 @@ for i=2:n
         a(i,j,i+1,j)=-(D(i+1,j)*e(j)+D(i+1,j+1)*e(j+1)/(2*d(i+1)));
         a(i,j,i,j-1)=-(D(i,j)*d(i)+D(i+1,j)*d(i+1)/(2*e(j)));
         a(i,j,i,j+1)=-(D(i,j+1)*d(i)+D(i+1,j+1)*d(j+1)/(2*e(j+1)));
-        a(i,j,i,j)=Eaij(1,j)-(a(i,j,i-1,j)+a(i,j,i+1,j)+a(i,j,i,j-1)+a(i,j,i,j+1));
+        a(i,j,i,j)=Eaij(i,j)-(a(i,j,i-1,j)+a(i,j,i+1,j)+a(i,j,i,j-1)+a(i,j,i,j+1));
     end
+end
+for aa=1:n+1;
+    bb=1; %bottom vacuum condition
+    a(aa,bb,:,:)=0;
+    a(aa,bb,aa,bb)=1;
+end
+for bb=1:m+1
+    aa=1;%left vacuum boundary condition
+    a(aa,bb,:,:)=0;
+    a(aa,bb,aa,bb)=1;
 end
 for aa=2:n
     bb=m+1; %top boundary condition
@@ -75,16 +84,7 @@ for aa=n+1
     a(aa,bb,aa,bb-1)=-(D(aa,bb)*d(aa))/(2*e(bb));
     a(aa,bb,aa,bb)=Eaij(aa,bb)-(a(aa,bb,aa-1,bb)+a(aa,bb,aa,bb-1));
 end
-for aa=1:n+1;
-    bb=1; %bottom vacuum condition
-    a(aa,bb,:,:)=0;
-    a(aa,bb,aa,bb)=1;
-end
-for bb=1:m+1
-    aa=1;%left vacuum boundary condition
-    a(aa,bb,:,:)=0;
-    a(aa,bb,aa,bb)=1;
-end
+
 
 A=zeros((m+1)*(n+1),(m+1)*(n+1));
 d=zeros(n+1,n+1,m+1);
@@ -134,15 +134,18 @@ for bb=1:m+1
     end
 end
 for i=1:n+1
-    Sij(i,1)=0; %bottom vacuum boundary
     Sij(i,m+1)=S(i,m+1)*V(i,m+1)+S(i+1,m+1)*V(i+1,m+1);%top reflecting boundary
 end
 for j=1:m+1;
-    Sij(1,j)=0; %left vacuum boundary
-     Sij(n+1,j)=S(n+1,j)*V(n+1,j)+S(n+1,j+1)*V(n+1,j+1);%right reflecting boundary
+    Sij(n+1,j)=S(n+1,j)*V(n+1,j)+S(n+1,j+1)*V(n+1,j+1);%right reflecting boundary
 end
 Sij(n+1,m+1)=S(n+1,m+1)*V(n+1,m+1);%top right
-
+for j=1:m+1
+    Sij(1,j)=0; %left vacuum boundary
+end
+for i=1:n+1
+    Sij(i,1)=0; %bottom vacuum boundary
+end
 for i=1:m+1
     A((n+1)*i-(n):(n+1)*i,(n+1)*i-(n):(n+1)*i)=d(:,:,i);%Middle diagonal
 end
