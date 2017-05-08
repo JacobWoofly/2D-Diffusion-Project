@@ -3,6 +3,8 @@ function [phi] = DiffusionSolverClean(xmin,xmax,d,ymin,ymax,e,D,E,S)
 %   Detailed explanation goes here
 n=(xmax-xmin)/d+1; %Adding one so that x is indexed from x1 to xn.
 m=(ymax-ymin)/e+1;
+n=ceil(n);
+m=ceil(m);
 if numel(D)==1; 
     D=zeros(n,m)+D;%Di,1 and D1,j should be undefined, but we do not use them
 elseif numel(D)~=(n)*(m)
@@ -22,7 +24,7 @@ elseif numel(S)~=(n)*(m)
     return
 end
 V=zeros(n,m)+e*d/4;%This assumes scalar e and d. Must be redefined to accept non-uniform x and y spacing.
-Eaij=zeros(n-1,m-1);
+Eaij=zeros(n,m);
 Sij=zeros(n,m); 
 a=zeros(n,m,n,m);
 d=zeros(n,1)+d; % d(1) and e(1) should be undefined, but they are unused.
@@ -108,14 +110,14 @@ b=zeros(n,n,m-1); %b is bottom diagonal band
 %converting from one 4D array to three 3D arrays.
 for j=1:m
     for i=1:n
-        c(i,i,j)=a(i,j,i,j);         %define C
+        c(i,i,j)=a(i,j,i,j);         %define C, always exists
         if i>1
-            c(i,i-1,j)=a(i,j,i-1,j); %define L
+            c(i,i-1,j)=a(i,j,i-1,j); %define L, only exists for i>1
         end
         if i<n
-            c(i,i+1,j)=a(i,j,i+1,j); %define R
+            c(i,i+1,j)=a(i,j,i+1,j); %define R, only exists for i<n
         end
-        if j<n
+        if j<m
             t(i,i,j)=a(i,j,i,j+1);   %define T
             b(i,i,j)=a(i,j+1,i,j);   %define B
         end
@@ -124,14 +126,17 @@ end
 
 %converting from three 3D arrays to one 2D array.
 for i=1:m
-    A((n)*i-(n-1):(n)*i,(n)*i-(n-1):(n)*i)=c(:,:,i);%Middle diagonal
+    A(n*i-n+1:n*i,n*i-n+1:n*i)=c(:,:,i);%Middle diagonal
 end
 for i=1:m-1
-    A((n)*i-(n-1)+(n):(n)*i+(n),(n)*i-(n-1):(n)*i)=b(:,:,i);%bottom diagonal
-    A((n)*i-(n-1):(n)*i,(n)*i-(n-1)+n:(n)*i+n)=t(:,:,i);%Top diagonal
+    A(n*i+1:n*i+n,n*i-n+1:n*i)=b(:,:,i);%bottom diagonal
+    A(n*i-n+1:n*i,n*i+1:n*i+n)=t(:,:,i);%Top diagonal
 end
 Sv=reshape(Sij,[n,m]); %convert from 2D array into vector for solving.
-phi=GaussRel(A,Sv,ones(n*m,1),.0001);
+% phi=GaussRel(A,Sv,ones(n*m,1),.00001);
+% phi=reshape(phi,[n,m]);
+phi=SORrel(A,Sv,ones(n*m,1),1.6,10^-8);
 phi=reshape(phi,[n,m]);
+Verifier
 end
 
