@@ -1,4 +1,5 @@
-DiffusionSolverClean(0,10,1,0,10,1,0,symfun((x+1)^2, [x y]),symfun((x+1)^3-(x+1)^2, [x y]),0,0,0,0); %D=0, so Phi=S/E: S=x^2+x, E=x+1, so phi=x.
+syms x y
+DiffusionSolverClean(0,10,1,0,10,1,0,symfun((x+1)^2, [x y]),symfun((x+1)^3-(x+1)^2, [x y]),'reflecting','reflecting','reflecting','reflecting'); %D=0, so Phi=S/E: S=x^2+x, E=x+1, so phi=x.
 DiffusionSolverClean(0,10,.5,0,10,.5,1,0,0,0,0,0,10);%Laplace solution, boundary condition that bottom=10.
 
 a=4;
