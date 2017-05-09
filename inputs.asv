@@ -1,0 +1,5 @@
+DiffusionSolverClean(0,10,1,0,10,1,0,symfun(x+1, [x y]),symfun(x^2+x, [x y]),0,0,0,0); %D=0, so Phi=S/E: S=x^2+x, E=x+1, so phi=x.
+DiffusionSolverClean(0,10,.5,0,10,.5,1,0,0,0,0,0,10);%Laplace solution, boundary condition that bottom=10.
+DiffusionSolverClean(0,10,.5,0,10,.5,1,1,1,0,'reflecting',0,'reflecting');%One-Dimensional Case.
+
+DiffusionSolverClean(0,10,.5,0,10,.5,1,1,symfun(abs(x-y), [x y]));%Source is absolute value of x-y, i.e. stronger towards 
