@@ -139,7 +139,7 @@ Sv=reshape(Sij,[n*m,1]); %convert from 2D array into vector for solving.
 % phi=GaussRel(A,Sv,ones(n*m,1),.00001);
 % phi=reshape(phi,[n,m]);
 phi=SORrel(A,Sv,ones(n*m,1),1.6,10^-8);
-phi=reshape(phi,[n,m]);
+phi=transpose(reshape(phi,[n,m]));
 Verifier
 end
 
