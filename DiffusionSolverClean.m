@@ -62,7 +62,7 @@ end
 
 %boundary conditions for a, Eaij, and Sij
 if nargin>9
-    if isa(right,'double')
+    if isa(right,'double')|| isa(right, 'symfun')
         RightValue
     elseif strcmpi(right,'vacuum')
         right=0;
@@ -71,7 +71,7 @@ if nargin>9
         RightReflecting
         right='ref';
     end
-    if isa(top,'double')
+    if isa(top,'double') || isa(top, 'symfun')
         TopValue
     elseif strcmpi(top,'vacuum')
         top=0;
@@ -80,7 +80,7 @@ if nargin>9
         TopReflecting
         top='ref';
     end
-    if isa(left,'double')
+    if isa(left,'double') || isa(left, 'symfun')
         LeftValue
     elseif strcmpi(left,'vacuum')
         left=0;
@@ -89,7 +89,7 @@ if nargin>9
         LeftReflecting
         left='ref';
     end
-    if isa(bottom,'double')
+    if isa(bottom,'double') || isa(bottom, 'symfun')
         BottomValue
     elseif strcmpi(bottom,'vacuum')
         bottom=0;
@@ -161,6 +161,6 @@ Sv=reshape(Sij,[n*m,1]); %convert from 2D array into vector for solving.
 % phi=reshape(phi,[n,m]);
 phi=SORrel(A,Sv,ones(n*m,1),1.6,10^-8);
 phi=transpose(reshape(phi,[n,m]));
-Verifier
+surf(x,y,phi)
 end
 
