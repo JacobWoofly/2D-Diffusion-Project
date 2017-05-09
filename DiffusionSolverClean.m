@@ -1,4 +1,4 @@
-function [phi] = DiffusionSolverClean(xmin,xmax,d,ymin,ymax,e,D,E,S,right,top,left,bottom)
+function [phi,x,y] = DiffusionSolverClean(xmin,xmax,d,ymin,ymax,e,D,E,S,right,top,left,bottom)
 %DIFFUSIONSOLVERCLEAN Summary of this function goes here
 %   Detailed explanation goes here
 n=(xmax-xmin)/d+1; %Adding one so that x is indexed from x1 to xn instead of x1 to x(n+1)
