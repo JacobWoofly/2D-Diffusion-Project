@@ -1,6 +1,10 @@
-function [phi] = DiffusionSolverClean(xmin,xmax,d,ymin,ymax,e,D,E,S,right,top,left,bottom)
+function [phi,x,y] = DiffusionSolverClean(xmin,xmax,d,ymin,ymax,e,D,E,S,right,top,left,bottom)
 %DIFFUSIONSOLVERCLEAN Summary of this function goes here
 %   Detailed explanation goes here
+if mod(xmax-xmin,d)~=0 || mod(ymax-ymin,e)~=0
+    warning('Cell size does not 
+xmax=xmax-mod(xmax-xmin,d);
+ymax=ymax-mod(ymax-ymin,e);
 n=(xmax-xmin)/d+1; %Adding one so that x is indexed from x1 to xn instead of x1 to x(n+1)
 m=(ymax-ymin)/e+1;
 n=ceil(n);
@@ -57,47 +61,66 @@ end
 
 %boundary conditions for a, Eaij, and Sij
 if nargin>9
-    if numem(right)==1
+    if isa(right,'double')
+        RightValue
+    elseif strcmpi(right,'vacuum')
+        right=0;
         RightValue
     else
         RightReflecting
+        right='ref';
     end
-    if numel(top)==1
+    if isa(top,'double')
+        TopValue
+    elseif strcmpi(top,'vacuum')
+        top=0;
         TopValue
     else
         TopReflecting
+        top='ref';
     end
-    if numem(left)==1
-        LefttValue
+    if isa(left,'double')
+        LeftValue
+    elseif strcmpi(left,'vacuum')
+        left=0;
+        LeftValue
     else
-        RightReflecting
+        LeftReflecting
+        left='ref';
     end
-    if numel(bottom)==1
+    if isa(bottom,'double')
+        BottomValue
+    elseif strcmpi(bottom,'vacuum')
+        bottom=0;
         BottomValue
     else
         BottomReflecting
+        bottom='ref';
     end
-    
-    LeftValue
-
-    TopValue
-
-    RightValue
-
-    % TopReflecting
-    % 
-    % RightReflecting
-    % 
-    % TopRightReflecting
+    if strcmp(right,'ref')
+        if strcmp(top,'ref')
+            TopRightReflecting
+        end
+        if strcmp(bottom,'ref')
+            BottomRightReflecting
+        end
+    end
+    if strcmp(left,'ref')
+        if strcmp(top,'ref')
+            TopLeftReflecting
+        end
+        if strcmp(bottom,'ref')
+            BottomLeftReflecting
+        end
     end
 else
-bottom=0;%#ok<NASGU>
-BottomValue
-left=0;%#ok<NASGU>
-LeftValue
-TopReflecting
-RightReflecting
-TopRightReflecting
+    bottom=0;%#ok<NASGU>
+    BottomValue
+    left=0;%#ok<NASGU>
+    LeftValue
+    TopReflecting
+    RightReflecting
+    TopRightReflecting
 end
     
     
@@ -132,11 +155,11 @@ for i=1:m-1
     A(n*i+1:n*i+n,n*i-n+1:n*i)=b(:,:,i);%bottom diagonal
     A(n*i-n+1:n*i,n*i+1:n*i+n)=t(:,:,i);%Top diagonal
 end
-Sv=reshape(Sij,[n,m]); %convert from 2D array into vector for solving.
+Sv=reshape(Sij,[n*m,1]); %convert from 2D array into vector for solving.
 % phi=GaussRel(A,Sv,ones(n*m,1),.00001);
 % phi=reshape(phi,[n,m]);
 phi=SORrel(A,Sv,ones(n*m,1),1.6,10^-8);
-phi=reshape(phi,[n,m]);
+phi=transpose(reshape(phi,[n,m]));
 Verifier
 end
 

@@ -1,6 +1,11 @@
 function [phi,x,y] = DiffusionSolverClean(xmin,xmax,d,ymin,ymax,e,D,E,S,right,top,left,bottom)
 %DIFFUSIONSOLVERCLEAN Summary of this function goes here
 %   Detailed explanation goes here
+if mod(xmax-xmin,d)~=0 || mod(ymax-ymin,e)~=0
+    warning('Cell size does not match boundaries: reducing boundaries')
+end
+xmax=xmax-mod(xmax-xmin,d);
+ymax=ymax-mod(ymax-ymin,e);
 n=(xmax-xmin)/d+1; %Adding one so that x is indexed from x1 to xn instead of x1 to x(n+1)
 m=(ymax-ymin)/e+1;
 n=ceil(n);
@@ -57,39 +62,55 @@ end
 
 %boundary conditions for a, Eaij, and Sij
 if nargin>9
-    if numel(right)==1
+    if isa(right,'double')
+        RightValue
+    elseif strcmpi(right,'vacuum')
+        right=0;
         RightValue
     else
         RightReflecting
+        right='ref';
     end
-    if numel(top)==1
+    if isa(top,'double')
+        TopValue
+    elseif strcmpi(top,'vacuum')
+        top=0;
         TopValue
     else
         TopReflecting
+        top='ref';
     end
-    if numel(left)==1
+    if isa(left,'double')
+        LeftValue
+    elseif strcmpi(left,'vacuum')
+        left=0;
         LeftValue
     else
         LeftReflecting
+        left='ref';
     end
-    if numel(bottom)==1
+    if isa(bottom,'double')
+        BottomValue
+    elseif strcmpi(bottom,'vacuum')
+        bottom=0;
         BottomValue
     else
         BottomReflecting
+        bottom='ref';
     end
-    if numel(right)~=1
-        if numel(top)~=1
+    if strcmp(right,'ref')
+        if strcmp(top,'ref')
             TopRightReflecting
         end
-        if numel(bottom)~=1
+        if strcmp(bottom,'ref')
             BottomRightReflecting
         end
     end
-    if numel(left)~=1 
-        if numel(top)~=1
+    if strcmp(left,'ref')
+        if strcmp(top,'ref')
             TopLeftReflecting
         end
-        if numel(bottom)~=1
+        if strcmp(bottom,'ref')
             BottomLeftReflecting
         end
     end
