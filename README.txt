@@ -14,3 +14,5 @@ S= source (single element = constant, matrix or symbolic function = D(x,y))
 
 right, top, left, and bottom: (single element = constant, vector or symbolic function = D(x,y), string: 'vacuum' 
 is vacuum condition, other strings result in reflecting condition)
+
+inputs.m has tests and example inputs.
